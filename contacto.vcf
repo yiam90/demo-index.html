@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Apellido;Nombre;;;
+FN:Nombre Apellido
+ORG:Empresa
+TITLE:Cargo
+TEL;TYPE=CELL:+50200000000
+EMAIL;TYPE=INTERNET:contacto@empresa.com
+URL:https://empresa.com.gt
+END:VCARD
