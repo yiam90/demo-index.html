@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1d1f23">
+<title>Nombre Apellido · Tarjeta digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1d1f23; --panel:#2a2d33; --panel-hover:#33373e; --line:rgba(255,255,255,.08);
+    --text:#ffffff; --muted:#b9bcc2; --accent:#c9ccd1;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0}
+  body{
+    min-height:100vh; color:var(--text);
+    font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    background:radial-gradient(120% 80% at 0% 0%,#383b41 0%,#1d1f23 55%,#16181b 100%);
+    padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    display:flex; justify-content:center; overflow-x:hidden;
+  }
+  .wave{position:fixed; top:0; right:0; height:100%; width:auto; pointer-events:none; opacity:.9}
+  .wrap{position:relative; width:100%; max-width:430px; padding:48px 22px 36px}
+  .head{text-align:center}
+  .avatar{
+    width:116px; height:116px; margin:0 auto 22px; border-radius:50%;
+    padding:3px; background:linear-gradient(145deg,#a3a7ae,#44474e);
+  }
+  .avatar > *{width:100%; height:100%; border-radius:50%; object-fit:cover; display:grid; place-items:center;
+    background:#2a2d33; font-family:"Cormorant Garamond",Georgia,serif; font-size:44px; font-weight:500; letter-spacing:.04em}
+  h1{margin:0; font-family:"Cormorant Garamond",Georgia,serif; font-weight:600; font-size:38px; letter-spacing:.01em; line-height:1.1}
+  .rule{width:34px; height:2px; background:var(--accent); margin:16px auto 14px; border-radius:2px}
+  .role{margin:0; font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent); font-weight:500}
+  .desc{margin:18px auto 0; max-width:340px; color:var(--muted); font-size:15px; line-height:1.6}
+  .actions{display:grid; gap:12px; margin-top:34px}
+  .btn{
+    display:flex; align-items:center; gap:14px; padding:16px 18px; border-radius:16px;
+    background:var(--panel); border:1px solid var(--line); color:var(--text); text-decoration:none;
+    font-weight:500; font-size:15px; transition:background .15s, transform .15s;
+  }
+  .btn:active{transform:scale(.98); background:var(--panel-hover)}
+  .btn svg{width:22px; height:22px; flex:none; stroke:var(--accent); fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round}
+  .btn span{flex:1}
+  .btn .chev{width:16px; height:16px; opacity:.5; flex:none}
+  .btn.primary{background:#f2f3f5; color:#1d1f23; border-color:transparent; font-weight:600}
+  .btn.primary svg{stroke:#1d1f23}
+  .foot{margin-top:34px; text-align:center; font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:#7d8189}
+  @media (hover:hover){.btn:hover{background:var(--panel-hover)}.btn.primary:hover{background:#fff}}
+</style>
+</head>
+<body>
+
+<svg class="wave" viewBox="0 0 120 600" preserveAspectRatio="xMaxYMin slice" aria-hidden="true">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#858991"/><stop offset="1" stop-color="#44474e"/></linearGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2b2e33"/><stop offset="1" stop-color="#17191c"/></linearGradient>
+  </defs>
+  <path d="M60 0 C48 160 120 240 100 420 C94 500 110 560 112 600 L120 600 L120 0Z" fill="url(#g1)" opacity=".35"/>
+  <path d="M82 0 C70 150 130 230 118 400 C114 480 126 560 128 600 L140 600 L140 0Z" fill="url(#g2)" opacity=".6"/>
+</svg>
+
+<main class="wrap">
+  <header class="head">
+    <div class="avatar" id="avatar"></div>
+    <h1 id="nombre"></h1>
+    <div class="rule"></div>
+    <p class="role" id="cargo"></p>
+    <p class="desc" id="desc"></p>
+  </header>
+  <nav class="actions" id="actions"></nav>
+  <div class="foot">Tarjeta digital NFC</div>
+</main>
+
+<script>
+/* ============ DATOS DEL PERFIL (lo único que cambia por cliente) ============ */
+const PERFIL = {
+  nombre: "Nombre Apellido",
+  cargo: "Cargo",
+  descripcion: "Descripción breve de lo que hago y cómo puedo ayudarte. Dos líneas son suficientes.",
+  foto: "",                         // ej.: "foto.jpg" (cuadrada). Vacío = muestra iniciales
+  whatsapp: "50200000000",          // código de país + número, sin + ni espacios
+  mensajeWhatsapp: "Hola, vi tu tarjeta digital y quisiera más información.",
+  telefono: "+50200000000",
+  correo: "contacto@empresa.com",
+  web: "https://empresa.com.gt",
+  etiquetaWeb: "Sitio web / Portafolio",
+  instagram: "",                    // ej.: "https://instagram.com/usuario"
+  linkedin: "",                     // ej.: "https://linkedin.com/in/usuario"
+  vcf: "contacto.vcf"               // archivo de contacto (misma carpeta)
+};
+/* ============================================================================ */
+
+const I = {
+  save:'<path d="M12 5v10m0 0-4-4m4 4 4-4M5 19h14"/>',
+  wa:'<path d="M4 20l1.3-4.2A8 8 0 1 1 8.4 18.8L4 20z"/><path d="M9 9.5c.3 2.2 2.3 4.2 4.5 4.5l1.2-1.2-1.8-1-.8.6c-.8-.4-1.4-1-1.8-1.8l.6-.8-1-1.8L9 9.5z"/>',
+  tel:'<path d="M6 4h3l1.5 4-2 1.3a10 10 0 0 0 5.2 5.2L15 12.5l4 1.5v3a2 2 0 0 1-2 2A13 13 0 0 1 4 6a2 2 0 0 1 2-2z"/>',
+  mail:'<rect x="3.5" y="5.5" width="17" height="13" rx="2"/><path d="M4 7l8 6 8-6"/>',
+  web:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 2.6 14.6 0 17M12 3.5c-2.6 2.4-2.6 14.6 0 17"/>',
+  ig:'<rect x="4" y="4" width="16" height="16" rx="4.5"/><circle cx="12" cy="12" r="3.6"/><circle cx="16.6" cy="7.4" r=".6"/>',
+  li:'<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 10.5V16M8 8v.01M11.5 16v-3.3a2 2 0 0 1 4 0V16M11.5 10.5V16"/>'
+};
+const CHEV = '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>';
+
+const $ = id => document.getElementById(id);
+const p = PERFIL;
+document.title = p.nombre + " · Tarjeta digital";
+$("nombre").textContent = p.nombre;
+$("cargo").textContent = p.cargo;
+$("desc").textContent = p.descripcion;
+
+const av = $("avatar");
+if (p.foto) { const img = new Image(); img.src = p.foto; img.alt = p.nombre; av.appendChild(img); }
+else { const d = document.createElement("div");
+  d.textContent = p.nombre.split(/\s+/).slice(0,2).map(s => s[0]).join("").toUpperCase(); av.appendChild(d); }
+
+const botones = [
+  p.vcf && { t:"Guardar contacto", i:I.save, href:p.vcf, extra:'class="btn primary" download' },
+  p.whatsapp && { t:"WhatsApp", i:I.wa, href:"https://wa.me/" + p.whatsapp + "?text=" + encodeURIComponent(p.mensajeWhatsapp || ""), ext:true },
+  p.telefono && { t:"Llamar", i:I.tel, href:"tel:" + p.telefono },
+  p.correo && { t:"Correo electrónico", i:I.mail, href:"mailto:" + p.correo },
+  p.web && { t:p.etiquetaWeb, i:I.web, href:p.web, ext:true },
+  p.instagram && { t:"Instagram", i:I.ig, href:p.instagram, ext:true },
+  p.linkedin && { t:"LinkedIn", i:I.li, href:p.linkedin, ext:true }
+].filter(Boolean);
+
+$("actions").innerHTML = botones.map(b =>
+  '<a ' + (b.extra || 'class="btn"') + ' href="' + b.href + '"' + (b.ext ? ' target="_blank" rel="noopener"' : '') + '>' +
+  '<svg viewBox="0 0 24 24">' + b.i + '</svg><span>' + b.t + '</span>' + (b.extra ? '' : CHEV) + '</a>'
+).join("");
+</script>
+</body>
+</html>
